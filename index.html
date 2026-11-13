@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07111f" />
+  <title>ArkayNMS | Find the Fault</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(13, 27, 45, .9);
+      --panel-2: #10233a;
+      --line: rgba(151, 183, 216, .15);
+      --muted: #8ea5bd;
+      --text: #eaf4ff;
+      --cyan: #4de2dd;
+      --blue: #69a8ff;
+      --green: #42d69a;
+      --amber: #ffc56b;
+      --red: #ff667d;
+      --purple: #a78bfa;
+      --shadow: 0 24px 70px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--bg); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 16% 0%, rgba(30, 121, 157, .18), transparent 32%),
+        radial-gradient(ellipse at 88% 12%, rgba(91, 75, 173, .16), transparent 28%),
+        linear-gradient(160deg, #07111f 0%, #081625 48%, #07101c 100%);
+    }
+    button { font: inherit; }
+    .shell { max-width: 1540px; margin: 0 auto; padding: 24px clamp(16px, 3vw, 42px) 34px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:18px; padding-bottom:22px; border-bottom:1px solid var(--line); }
+    .brand { display:flex; align-items:center; gap:12px; min-width:0; }
+    .brand-mark { width:42px; height:42px; border-radius:13px; display:grid; place-items:center; background:linear-gradient(145deg, rgba(77,226,221,.22), rgba(105,168,255,.13)); border:1px solid rgba(77,226,221,.35); box-shadow:0 0 28px rgba(77,226,221,.1); }
+    .brand-mark svg { width:25px; height:25px; }
+    .brand-name { font-size:17px; font-weight:850; letter-spacing:.13em; }
+    .brand-sub { color:var(--muted); font-size:10px; letter-spacing:.18em; margin-top:3px; }
+    .event-pill { display:flex; align-items:center; gap:9px; padding:9px 13px; border:1px solid rgba(77,226,221,.23); border-radius:999px; color:#c9fbf8; background:rgba(77,226,221,.07); font-size:11px; letter-spacing:.1em; font-weight:750; white-space:nowrap; }
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 12px var(--green); }
+    .hero { display:flex; justify-content:space-between; align-items:flex-end; gap:20px; padding:28px 0 22px; }
+    .eyebrow { color:var(--cyan); font-size:11px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; margin-bottom:9px; }
+    h1 { margin:0; font-size:clamp(28px, 4vw, 47px); line-height:1.04; letter-spacing:-.045em; }
+    h1 span { color:var(--cyan); }
+    .hero-copy { color:#9eb2c8; font-size:14px; line-height:1.6; max-width:650px; margin:11px 0 0; }
+    .round-badge { border:1px solid var(--line); background:rgba(255,255,255,.035); border-radius:14px; padding:12px 15px; min-width:142px; text-align:right; }
+    .round-badge small { display:block; color:var(--muted); font-size:10px; letter-spacing:.13em; text-transform:uppercase; }
+    .round-badge strong { display:block; margin-top:4px; font-size:20px; }
+    .metrics { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+    .metric { background:linear-gradient(140deg, rgba(16,35,58,.86), rgba(10,24,40,.8)); border:1px solid var(--line); border-radius:15px; padding:14px 16px; min-height:83px; }
+    .metric-top { display:flex; justify-content:space-between; align-items:center; gap:8px; color:var(--muted); font-size:11px; }
+    .metric-icon { width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:rgba(255,255,255,.055); color:var(--cyan); font-size:14px; }
+    .metric-value { margin-top:5px; font-size:23px; font-weight:800; letter-spacing:-.04em; }
+    .metric-value small { color:var(--muted); font-size:12px; font-weight:600; letter-spacing:0; }
+    .workspace { display:grid; grid-template-columns:minmax(0, 1.75fr) minmax(330px, .9fr); gap:16px; align-items:stretch; }
+    .panel { background:linear-gradient(150deg, rgba(14,30,49,.96), rgba(9,22,37,.96)); border:1px solid var(--line); border-radius:19px; box-shadow:var(--shadow); overflow:hidden; }
+    .panel-head { display:flex; justify-content:space-between; align-items:center; gap:15px; padding:17px 19px; border-bottom:1px solid var(--line); }
+    .panel-title { font-size:13px; font-weight:800; letter-spacing:.02em; }
+    .panel-kicker { color:var(--muted); font-size:10px; letter-spacing:.12em; text-transform:uppercase; margin-top:4px; }
+    .topology-state { display:flex; align-items:center; gap:7px; padding:7px 10px; border-radius:9px; color:#ffc4cd; background:rgba(255,102,125,.09); border:1px solid rgba(255,102,125,.22); font-size:10px; font-weight:800; letter-spacing:.08em; white-space:nowrap; }
+    .topology-state.ok { color:#a9f4d6; background:rgba(66,214,154,.08); border-color:rgba(66,214,154,.2); }
+    .topology-wrap { padding:7px 10px 0; position:relative; }
+    #topology { display:block; width:100%; height:auto; min-height:310px; overflow:visible; }
+    .topology-bg-grid { opacity:.36; }
+    .edge { stroke:#35516b; stroke-width:3.2; fill:none; stroke-linecap:round; transition:stroke .25s, opacity .25s; }
+    .edge.active { stroke:var(--cyan); filter:drop-shadow(0 0 5px rgba(77,226,221,.4)); }
+    .edge.failed { stroke:var(--red); stroke-width:4.5; stroke-dasharray:8 7; animation:dash 1s linear infinite; filter:drop-shadow(0 0 5px rgba(255,102,125,.55)); }
+    .edge-hit { stroke:transparent; stroke-width:20; fill:none; cursor:pointer; pointer-events:stroke; }
+    .edge-hit:focus { outline:none; stroke:rgba(77,226,221,.3); }
+    .edge-group:hover .edge:not(.failed) { stroke:#83a9c8; }
+    .edge-label { fill:#7290aa; font-size:10px; text-anchor:middle; }
+    .node-ring { fill:#0d2033; stroke:#4a6b87; stroke-width:2; }
+    .node-core { fill:#15314a; }
+    .node.up .node-ring { stroke:rgba(66,214,154,.72); }
+    .node.up .node-core { fill:rgba(66,214,154,.16); }
+    .node.affected .node-ring { stroke:rgba(255,102,125,.8); stroke-dasharray:4 3; }
+    .node.affected .node-core { fill:rgba(255,102,125,.13); }
+    .node.root .node-ring { stroke:var(--cyan); stroke-width:2.5; }
+    .node-name { fill:#e6f2ff; font-size:12px; font-weight:750; text-anchor:middle; }
+    .node-type { fill:#7793ad; font-size:9px; text-anchor:middle; letter-spacing:.05em; }
+    .node-status { fill:var(--green); font-size:9px; font-weight:900; text-anchor:middle; }
+    .node.affected .node-status { fill:var(--red); }
+    .node-icon { fill:#b8d0e6; font-size:14px; text-anchor:middle; dominant-baseline:middle; }
+    .topology-legend { display:flex; flex-wrap:wrap; align-items:center; gap:17px; border-top:1px solid var(--line); padding:13px 18px 15px; color:var(--muted); font-size:10px; }
+    .legend-item { display:flex; align-items:center; gap:7px; }
+    .legend-dot { width:8px; height:8px; border-radius:50%; background:var(--green); }
+    .legend-dot.red { background:var(--red); }
+    .legend-line { width:23px; border-top:3px solid var(--cyan); }
+    .legend-line.red { border-top:3px dashed var(--red); }
+    .hint { margin-left:auto; color:#b3c9dd; }
+    .side { display:flex; flex-direction:column; gap:13px; }
+    .incident { padding:17px 18px 16px; }
+    .incident-top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .severity { display:inline-flex; align-items:center; gap:6px; color:#ffadb9; background:rgba(255,102,125,.1); border:1px solid rgba(255,102,125,.2); padding:6px 9px; border-radius:8px; font-size:9px; font-weight:850; letter-spacing:.1em; }
+    .incident-id { color:#7892ab; font:10px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .incident h2 { font-size:18px; letter-spacing:-.025em; margin:13px 0 5px; }
+    .incident p { margin:0; color:#9fb4c9; font-size:12px; line-height:1.55; }
+    .incident-meta { display:flex; gap:16px; margin-top:15px; padding-top:13px; border-top:1px solid var(--line); }
+    .incident-meta div { min-width:0; }
+    .incident-meta small { display:block; color:#718aa3; font-size:9px; letter-spacing:.1em; text-transform:uppercase; }
+    .incident-meta strong { display:block; margin-top:4px; font-size:11px; }
+    .challenge-panel { padding:16px 18px 18px; flex:1; }
+    .step-row { display:flex; align-items:center; gap:8px; margin-bottom:15px; }
+    .step { display:flex; align-items:center; gap:6px; color:#7791aa; font-size:10px; font-weight:800; letter-spacing:.04em; }
+    .step b { width:20px; height:20px; display:grid; place-items:center; border-radius:50%; border:1px solid #37516b; font-size:10px; }
+    .step.active { color:#bffaf5; }
+    .step.active b { color:#07111f; background:var(--cyan); border-color:var(--cyan); }
+    .step.done { color:#9aebca; }
+    .step.done b { background:rgba(66,214,154,.14); color:var(--green); border-color:rgba(66,214,154,.5); }
+    .step-line { height:1px; flex:1; background:var(--line); }
+    .section-label { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:14px 0 8px; color:#d8e8f7; font-size:11px; font-weight:800; }
+    .section-label small { color:#7e98b1; font-size:9px; font-weight:600; }
+    .inspect-box { padding:11px 12px; background:rgba(4,14,25,.58); border:1px dashed rgba(120,156,188,.28); border-radius:11px; color:#8fa8bf; font-size:11px; line-height:1.5; }
+    .inspect-box strong { color:#e7f3ff; }
+    .inspect-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+    .inspect-cell { padding:8px 9px; border-radius:8px; background:rgba(255,255,255,.035); }
+    .inspect-cell small { display:block; color:#7892ab; font-size:8px; letter-spacing:.1em; text-transform:uppercase; }
+    .inspect-cell strong { display:block; margin-top:3px; font-size:10px; }
+    .choices { display:grid; gap:7px; }
+    .choice { width:100%; display:flex; align-items:flex-start; gap:9px; padding:10px 11px; text-align:left; color:#a9bed2; background:rgba(255,255,255,.025); border:1px solid rgba(129,163,194,.15); border-radius:10px; cursor:pointer; transition:.18s ease; font-size:10px; line-height:1.4; }
+    .choice:hover:not(:disabled) { background:rgba(77,226,221,.06); border-color:rgba(77,226,221,.36); color:#eaf8ff; transform:translateY(-1px); }
+    .choice.selected { color:#d8fffb; background:rgba(77,226,221,.1); border-color:rgba(77,226,221,.65); box-shadow:inset 0 0 0 1px rgba(77,226,221,.12); }
+    .choice:disabled { opacity:.38; cursor:not-allowed; }
+    .choice-mark { flex:0 0 16px; width:16px; height:16px; border:1px solid #59748e; border-radius:5px; display:grid; place-items:center; font-size:9px; margin-top:0; color:var(--cyan); }
+    .choice.selected .choice-mark { border-color:var(--cyan); background:rgba(77,226,221,.13); }
+    .choice-text { flex:1; }
+    .feedback { display:none; padding:10px 11px; margin-top:11px; border-radius:10px; font-size:10px; line-height:1.5; }
+    .feedback.show { display:block; }
+    .feedback.good { color:#b7f7d9; background:rgba(66,214,154,.09); border:1px solid rgba(66,214,154,.23); }
+    .feedback.bad { color:#ffc0c9; background:rgba(255,102,125,.08); border:1px solid rgba(255,102,125,.2); }
+    .feedback.info { color:#c5e4ff; background:rgba(105,168,255,.08); border:1px solid rgba(105,168,255,.2); }
+    .action-row { display:flex; gap:8px; margin-top:14px; }
+    .btn { border:0; border-radius:10px; cursor:pointer; font-size:11px; font-weight:850; letter-spacing:.02em; padding:12px 14px; transition:.18s ease; }
+    .btn:disabled { opacity:.35; cursor:not-allowed; }
+    .btn-primary { flex:1; color:#04141c; background:linear-gradient(100deg, #62e5dc, #80c9ff); box-shadow:0 7px 22px rgba(77,226,221,.13); }
+    .btn-primary:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }
+    .btn-quiet { color:#a8bfd4; background:rgba(255,255,255,.055); border:1px solid var(--line); }
+    .impact-strip { display:flex; align-items:flex-start; gap:9px; padding:12px 15px; border-top:1px solid var(--line); color:#9fb4c8; font-size:10px; line-height:1.5; }
+    .impact-strip strong { color:#e5f1fc; }
+    .impact-icon { color:var(--amber); font-size:14px; }
+    .bottom-row { display:grid; grid-template-columns:1.25fr .75fr; gap:16px; margin-top:16px; }
+    .log-panel, .how-panel { padding:15px 18px; }
+    .subhead { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:11px; }
+    .subhead strong { font-size:11px; }
+    .subhead span { color:#718aa3; font-size:9px; letter-spacing:.09em; text-transform:uppercase; }
+    .logs { display:grid; gap:7px; }
+    .log { display:grid; grid-template-columns:62px 1fr auto; align-items:center; gap:9px; font:10px ui-monospace, SFMono-Regular, Menlo, monospace; color:#9bb2c8; }
+    .log time { color:#68839e; }
+    .log em { font-style:normal; color:var(--red); font-size:9px; font-weight:800; }
+    .log em.ok { color:var(--green); }
+    .how-list { display:grid; gap:9px; }
+    .how-item { display:flex; align-items:flex-start; gap:9px; color:#8fa8bf; font-size:10px; line-height:1.45; }
+    .how-item b { flex:0 0 18px; width:18px; height:18px; display:grid; place-items:center; border-radius:6px; background:rgba(77,226,221,.1); color:var(--cyan); font-size:9px; }
+    .footer { display:flex; justify-content:space-between; gap:15px; padding:20px 2px 0; color:#617c96; font-size:9px; letter-spacing:.06em; }
+    .footer strong { color:#9bb3ca; }
+    .toast { position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px); opacity:0; pointer-events:none; padding:11px 16px; border:1px solid rgba(77,226,221,.3); border-radius:11px; background:#10283c; color:#d8fffb; box-shadow:var(--shadow); font-size:11px; transition:.25s ease; z-index:5; }
+    .toast.show { transform:translate(-50%, 0); opacity:1; }
+    .complete-overlay { display:none; position:fixed; inset:0; z-index:10; padding:20px; background:rgba(3,9,17,.78); backdrop-filter:blur(10px); place-items:center; }
+    .complete-overlay.show { display:grid; }
+    .complete-card { width:min(500px, 100%); padding:32px; text-align:center; border-radius:22px; background:linear-gradient(145deg, #112b40, #0a1b2d); border:1px solid rgba(77,226,221,.3); box-shadow:0 30px 100px rgba(0,0,0,.55); }
+    .complete-icon { width:58px; height:58px; display:grid; place-items:center; margin:0 auto 17px; border-radius:18px; color:#061720; background:linear-gradient(135deg, var(--cyan), #a8f5d8); font-size:27px; }
+    .complete-card h2 { margin:0 0 9px; font-size:25px; }
+    .complete-card p { color:#9eb6ca; font-size:12px; line-height:1.6; margin:0 0 18px; }
+    .complete-score { margin:0 auto 20px; padding:13px; max-width:190px; background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:13px; }
+    .complete-score small { display:block; color:#8ea8c0; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
+    .complete-score strong { display:block; font-size:29px; margin-top:3px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    @keyframes dash { to { stroke-dashoffset:-30; } }
+    @media (max-width: 1050px) {
+      .workspace { grid-template-columns:minmax(0, 1.35fr) minmax(310px, .9fr); }
+      .bottom-row { grid-template-columns:1fr; }
+      .hint { margin-left:0; width:100%; }
+    }
+    @media (max-width: 780px) {
+      .shell { padding:15px 12px 24px; }
+      .hero { align-items:flex-start; flex-direction:column; }
+      .round-badge { text-align:left; }
+      .metrics { grid-template-columns:repeat(2, minmax(0,1fr)); }
+      .workspace { grid-template-columns:1fr; }
+      .topology-wrap { padding:4px 2px 0; }
+      #topology { min-height:230px; }
+      .side { display:grid; grid-template-columns:1fr; }
+      .bottom-row { margin-top:13px; }
+      .event-pill { font-size:9px; padding:8px 9px; }
+      .brand-sub { letter-spacing:.1em; }
+    }
+    @media (max-width: 430px) {
+      .event-pill { display:none; }
+      .metric { padding:12px; }
+      .metric-value { font-size:20px; }
+      .panel-head { padding:14px; }
+      .incident, .challenge-panel { padding:14px; }
+      .step { font-size:9px; gap:4px; }
+      .step b { width:18px; height:18px; }
+      .log { grid-template-columns:48px 1fr auto; font-size:9px; }
+      .footer { flex-direction:column; }
+    }
+  
+/* Summit v4 additions */
+#startOverlay {position:fixed;inset:0;z-index:30;background:rgba(3,10,20,.96);display:grid;place-items:center;padding:20px;overflow:auto}
+#startOverlay.hidden{display:none}.start-card{width:min(660px,100%);text-align:center;padding:35px;background:linear-gradient(140deg,#102940,#071624);border:1px solid #2b6475;border-radius:24px;box-shadow:0 25px 90px #0009}
+.start-card h1{margin:12px 0}.start-card p{color:#a9c2d8;line-height:1.7}.start-card input{width:min(350px,100%);background:#091a2b;color:white;border:1px solid #41647b;border-radius:10px;padding:14px;margin:16px auto;display:block;font-size:16px}.start-card .btn{margin:6px}
+#timerPill{font-size:17px;font-weight:900;color:#a5f5df;border:1px solid #275c59;padding:10px 15px;border-radius:12px;white-space:nowrap}#timerPill.urgent{color:#ff667d;border-color:#ff667d;animation:pulse .65s infinite alternate}@keyframes pulse{to{box-shadow:0 0 22px #ff667d77;transform:scale(1.04)}}
+#completeOverlay.failure .complete-card{border-color:#ff667d;background:linear-gradient(145deg,#431b30,#101827)}#completeOverlay.failure .complete-icon{background:#ff667d}#completeOverlay.failure h2{color:#ffc0c9}
+#completeOverlay.success .complete-card{border-color:#42d69a}#completeOverlay.success .complete-icon{background:#42d69a}
+#leaderboardOverlay{position:fixed;inset:0;z-index:40;background:#07111f;overflow:auto;padding:25px;display:none}#leaderboardOverlay.show{display:block}.board-wrap{max-width:1000px;margin:auto}.board-table{width:100%;border-collapse:collapse;margin-top:20px}.board-table th,.board-table td{padding:15px 12px;text-align:left;border-bottom:1px solid #25425c}.board-table th{color:#4de2dd;font-size:12px}.board-table td{font-size:14px}.board-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.board-head h1{font-size:clamp(24px,4vw,40px)}
+#progressTrack{height:6px;background:#233b52;border-radius:8px;overflow:hidden;margin:0 0 15px}#progressFill{height:100%;width:0;background:linear-gradient(90deg,#42d69a,#4de2dd);transition:width .4s}
+#uploadStatus{color:#a8c6dd;font-size:12px;min-height:18px}.confetti{position:fixed;top:-15px;width:9px;height:14px;z-index:55;pointer-events:none;animation:confettiFall 1.7s linear forwards}@keyframes confettiFall{to{transform:translateY(110vh) rotate(600deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M16 3.5 27 9.8v12.4L16 28.5 5 22.2V9.8L16 3.5Z" stroke="#68e8df" stroke-width="1.8"/><path d="M10 19.5 16 8l6 11.5M12.2 15.4h7.6" stroke="#c2fbf7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="brand-name">ARKAY<span style="color:var(--cyan)">NMS</span></div>
+          <div class="brand-sub">NETWORK OPERATIONS SIMULATOR</div>
+        </div>
+      </div>
+      <div class="event-pill"><span class="live-dot"></span> BENGALURU TECH SUMMIT · INTERACTIVE DEMO</div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">The network needs you</div>
+        <h1>Find the <span>fault.</span> Fix the impact.</h1>
+        <p class="hero-copy">A link just went down. Your job: trace the failure, understand what it affects, and bring the network back online. Think like an NOC engineer.</p>
+      </div>
+      <div id="timerPill" aria-live="off">01:30</div><div class="round-badge"><small>Challenge</small><strong id="roundLabel">01 <span style="color:#617e99;font-size:14px">/ 03</span></strong></div>
+    </section>
+
+    <div id="progressTrack"><div id="progressFill"></div></div><section class="metrics" aria-label="Network metrics">
+      <div class="metric"><div class="metric-top"><span>NETWORK AVAILABILITY</span><span class="metric-icon">◉</span></div><div class="metric-value" id="availability">62<small>%</small></div></div>
+      <div class="metric"><div class="metric-top"><span>DEVICES IMPACTED</span><span class="metric-icon" style="color:var(--red)">⌁</span></div><div class="metric-value" id="affectedCount">05<small> / 13</small></div></div>
+      <div class="metric"><div class="metric-top"><span>ACTIVE INCIDENTS</span><span class="metric-icon" style="color:var(--amber)">!</span></div><div class="metric-value" id="incidentCount">01<small> critical</small></div></div>
+      <div class="metric"><div class="metric-top"><span>YOUR SCORE</span><span class="metric-icon" style="color:var(--purple)">✦</span></div><div class="metric-value" id="score">000<small> pts</small></div></div>
+    </section>
+
+    <main class="workspace">
+      <section class="panel" aria-label="Network topology">
+        <div class="panel-head">
+          <div><div class="panel-title">Live network topology</div><div class="panel-kicker">Bengaluru HQ · simplified enterprise network</div></div>
+          <div class="topology-state" id="topologyState"><span class="live-dot" style="background:var(--red);box-shadow:0 0 10px var(--red)"></span> DEGRADED</div>
+        </div>
+        <div class="topology-wrap">
+          <svg id="topology" viewBox="0 0 1000 540" role="img" aria-label="Interactive network topology. Select a link to inspect it.">
+            <defs>
+              <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M 34 0 L 0 0 0 34" fill="none" stroke="#24405a" stroke-width=".65"/></pattern>
+              <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <rect class="topology-bg-grid" x="0" y="0" width="1000" height="540" fill="url(#grid)"/>
+            <g id="edgeLayer"></g>
+            <g id="nodeLayer"></g>
+          </svg>
+        </div>
+        <div class="topology-legend">
+          <span class="legend-item"><i class="legend-dot"></i> Reachable</span>
+          <span class="legend-item"><i class="legend-dot red"></i> Unreachable</span>
+          <span class="legend-item"><i class="legend-line"></i> Active link</span>
+          <span class="legend-item"><i class="legend-line red"></i> Failed link</span>
+          <span class="hint">↖ Select a link to inspect its interface</span>
+        </div>
+        <div class="impact-strip"><span class="impact-icon">⚠</span><span id="impactSummary"><strong>Impact radius:</strong> 5 devices are unreachable beyond the failed uplink.</span></div>
+      </section>
+
+      <aside class="side">
+        <section class="panel incident">
+          <div class="incident-top"><span class="severity">● SEV 1 · CRITICAL</span><span class="incident-id" id="incidentId">INC-2048</span></div>
+          <h2 id="incidentTitle">East Wing connectivity loss</h2>
+          <p id="incidentDescription">Multiple edge devices stopped responding. Identify the failed path and restore connectivity before users are impacted further.</p>
+          <div class="incident-meta">
+            <div><small>Site</small><strong id="siteName">Bengaluru HQ</strong></div>
+            <div><small>Detected</small><strong id="detectedAt">11:42:08</strong></div>
+            <div><small>Service</small><strong id="serviceName">Campus LAN</strong></div>
+          </div>
+        </section>
+
+        <section class="panel challenge-panel">
+          <div class="step-row" aria-label="Challenge steps">
+            <div class="step active" id="step1"><b>1</b> Inspect</div><div class="step-line"></div>
+            <div class="step" id="step2"><b>2</b> Diagnose</div><div class="step-line"></div>
+            <div class="step" id="step3"><b>3</b> Resolve</div>
+          </div>
+          <div class="section-label">1. Inspect the fault <small>SELECT THE FAILED LINK</small></div>
+          <div class="inspect-box" id="inspectBox">Click the <strong>red, broken link</strong> in the topology to inspect both endpoints and interface telemetry.</div>
+          <div class="inspect-grid" id="inspectGrid" style="display:none">
+            <div class="inspect-cell"><small>Interface</small><strong id="inspectInterface">—</strong></div>
+            <div class="inspect-cell"><small>Link state</small><strong style="color:var(--red)" id="inspectState">DOWN</strong></div>
+            <div class="inspect-cell"><small>Endpoint A</small><strong id="inspectA">—</strong></div>
+            <div class="inspect-cell"><small>Endpoint B</small><strong id="inspectB">—</strong></div>
+          </div>
+
+          <div class="section-label">2. What is the likely cause? <small id="diagnoseHint">LOCKED · INSPECT FIRST</small></div>
+          <div class="choices" id="diagnosisChoices">
+            <button class="choice" disabled><span class="choice-mark">A</span><span class="choice-text">Inspect the failed link to unlock diagnosis options.</span></button>
+          </div>
+
+          <div class="section-label">3. What would you do? <small id="resolveHint">LOCKED · DIAGNOSE FIRST</small></div>
+          <div class="choices" id="resolutionChoices">
+            <button class="choice" disabled><span class="choice-mark">A</span><span class="choice-text">Choose a likely cause to unlock remediation options.</span></button>
+          </div>
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+          <div class="action-row">
+            <button class="btn btn-quiet" id="resetBtn" type="button">Restart run</button>
+            <button class="btn btn-primary" id="submitBtn" type="button" disabled>Validate &amp; restore network →</button>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <section class="bottom-row">
+      <section class="panel log-panel">
+        <div class="subhead"><strong>Event timeline</strong><span>Live telemetry feed</span></div>
+        <div class="logs" id="logs">
+          <div class="log"><time>11:42:08</time><span>IF-MIB · Gi1/0/24 operational status changed to DOWN</span><em>CRITICAL</em></div>
+          <div class="log"><time>11:42:09</time><span>Topology engine · downstream reachability recalculated</span><em>WARNING</em></div>
+          <div class="log"><time>11:42:11</time><span>SNMP polling · 5 devices not responding</span><em>IMPACT</em></div>
+        </div>
+      </section>
+      <section class="panel how-panel">
+        <div class="subhead"><strong>How to play</strong><span>3 steps · 1 incident</span></div>
+        <div class="how-list">
+          <div class="how-item"><b>1</b><span><strong style="color:#d9eafa">Inspect:</strong> select the failed link in the topology and read its interface telemetry.</span></div>
+          <div class="how-item"><b>2</b><span><strong style="color:#d9eafa">Diagnose:</strong> choose the most likely root cause based on the evidence.</span></div>
+          <div class="how-item"><b>3</b><span><strong style="color:#d9eafa">Resolve:</strong> select a remediation. A correct fix restores the affected devices.</span></div>
+        </div>
+      </section>
+    </section>
+    <footer class="footer"><span><strong>ARKAYNMS</strong> · On-prem network monitoring</span><span>SIMULATED ENVIRONMENT · NO LIVE NETWORK CONNECTION</span></footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="complete-overlay" id="completeOverlay" role="dialog" aria-modal="true" aria-labelledby="completeTitle">
+    <div class="complete-card">
+      <div class="complete-icon" id="completeIcon">✓</div>
+      <h2 id="completeTitle">Network restored!</h2>
+      <p id="completeText">The failed link is back up and all downstream devices are reachable.</p>
+      <div class="complete-score"><small>Current score</small><strong id="completeScore">100 pts</strong></div><p id="uploadStatus" role="status"></p>
+      <button class="btn btn-primary" id="nextBtn" type="button">Next challenge →</button>
+    </div>
+  </div>
+
+<div id="startOverlay"><div class="start-card"><div class="eyebrow">BENGALURU TECH SUMMIT · AARKAY ENGINEERING ARENA</div><h1>NETWORK <span style="color:#4de2dd">DETECTIVE</span></h1><p>Enter the NOC. Inspect a real-looking enterprise topology, diagnose incidents from telemetry and restore services before the clock runs out.</p><p>⚡ 20 incidents · 🎲 5 randomized missions · ⏱ 90 seconds each · 🏆 Shared leaderboard</p><label for="playerName">Your detective name</label><input id="playerName" maxlength="24" placeholder="Enter nickname (2–24 characters)" autocomplete="nickname"><button class="btn btn-primary" id="startGame" type="button">Start investigation →</button><button class="btn btn-quiet" id="openBoardStart" type="button">🏆 Leaderboard</button><p style="font-size:11px">Simulated network — no production devices are modified.</p></div></div>
+<div id="leaderboardOverlay"><div class="board-wrap"><div class="board-head"><div><div class="eyebrow">ARKAYNMS · SUMMIT-WIDE RANKINGS</div><h1>DETECTIVE LEADERBOARD</h1></div><div><button class="btn btn-quiet" id="refreshBoard" type="button">↻ Refresh</button> <button class="btn btn-primary" id="closeBoard" type="button">Back to game</button></div></div><p id="boardMessage">Loading shared scores…</p><p id="boardSync"></p><div style="overflow-x:auto"><table class="board-table"><thead><tr><th>Rank</th><th>Detective</th><th>Score</th><th>Resolved</th><th>Submitted</th></tr></thead><tbody id="boardRows"></tbody></table></div></div></div>
+  <script src="config.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      const NS = 'http://www.w3.org/2000/svg';
+      const nodes = [
+        { id:'wan', name:'WAN Router', type:'EDGE ROUTER', icon:'⇄', x:105, y:260, root:true },
+        { id:'core', name:'CORE-SW-01', type:'CORE SWITCH', icon:'▦', x:320, y:260 },
+        { id:'distA', name:'DIST-SW-01', type:'DISTRIBUTION', icon:'▦', x:535, y:110 },
+        { id:'accessA', name:'ACCESS-SW-01', type:'ACCESS SWITCH', icon:'▤', x:735, y:110 },
+        { id:'serverDb', name:'DB-SRV-01', type:'DATABASE', icon:'▤', x:900, y:55 },
+        { id:'serverApp', name:'APP-SRV-01', type:'APPLICATION', icon:'▤', x:900, y:180 },
+        { id:'distB', name:'DIST-SW-02', type:'DISTRIBUTION', icon:'▦', x:535, y:410 },
+        { id:'accessB', name:'ACCESS-SW-02', type:'ACCESS SWITCH', icon:'▤', x:735, y:410 },
+        { id:'ap1', name:'WIFI-AP-01', type:'WIRELESS AP', icon:'◉', x:900, y:315 },
+        { id:'ap2', name:'WIFI-AP-02', type:'WIRELESS AP', icon:'◉', x:900, y:405 },
+        { id:'printer', name:'PRN-FLR-02', type:'NETWORK PRINTER', icon:'▧', x:900, y:478 },
+        { id:'firewall', name:'FW-EDGE-01', type:'FIREWALL', icon:'⬡', x:535, y:260 },
+        { id:'app', name:'ERP-SERVICE', type:'BUSINESS APP', icon:'◇', x:735, y:260 }
+      ];
+      const nodeById = Object.fromEntries(nodes.map(n => [n.id, n]));
+      const edges = [
+        { id:'wan-core', a:'wan', b:'core', iface:'Te0/0/0', label:'WAN uplink' },
+        { id:'core-distA', a:'core', b:'distA', iface:'Gi1/0/23', label:'North uplink' },
+        { id:'distA-accessA', a:'distA', b:'accessA', iface:'Gi1/0/1', label:'Server access' },
+        { id:'accessA-db', a:'accessA', b:'serverDb', iface:'Gi1/0/10', label:'Database link' },
+        { id:'accessA-app', a:'accessA', b:'serverApp', iface:'Gi1/0/11', label:'App server link' },
+        { id:'core-distB', a:'core', b:'distB', iface:'Gi1/0/24', label:'East Wing uplink' },
+        { id:'distB-accessB', a:'distB', b:'accessB', iface:'Gi1/0/2', label:'Floor access' },
+        { id:'accessB-ap1', a:'accessB', b:'ap1', iface:'Gi1/0/17', label:'Wi-Fi access 1' },
+        { id:'accessB-ap2', a:'accessB', b:'ap2', iface:'Gi1/0/18', label:'Wi-Fi access 2' },
+        { id:'accessB-printer', a:'accessB', b:'printer', iface:'Gi1/0/19', label:'Printer access' },
+        { id:'core-firewall', a:'core', b:'firewall', iface:'Gi1/0/1', label:'Security segment' },
+        { id:'firewall-app', a:'firewall', b:'app', iface:'Gi0/0', label:'Application path' }
+      ];
+      const scenarios = [
+        {
+          id:'INC-2048', title:'East Wing connectivity loss', description:'Multiple edge devices stopped responding. Identify the failed path and restore connectivity before users are impacted further.', site:'Bengaluru HQ', service:'Campus LAN', detected:'11:42:08', failedEdge:'core-distB',
+          telemetry:'Admin status is DOWN (administratively disabled), and operational state is DOWN. No CRC errors were recorded before the event.',
+          cause:'admin_down',
+          diagnoses:[
+            { id:'fiber', text:'Physical fiber damage or a loose patch lead', correct:false },
+            { id:'admin_down', text:'The uplink interface was administratively shut down', correct:true },
+            { id:'vlan', text:'An incorrect VLAN is blocking endpoint traffic', correct:false }
+          ],
+          fixes:[
+            { id:'replace_fiber', text:'Replace the fiber patch lead and check optical power', correct:false },
+            { id:'enable_port', text:'Re-enable the uplink interface, then verify link and neighbor state', correct:true },
+            { id:'change_vlan', text:'Reconfigure the access VLAN on downstream ports', correct:false }
+          ],
+          explanation:'The interface admin state was disabled. Re-enabling the uplink restores the path to the East Wing; verify the operational state and confirm that the downstream devices return.',
+          logs:[['11:42:08','IF-MIB · Gi1/0/24 operational status changed to DOWN','CRITICAL'],['11:42:09','Topology engine · downstream reachability recalculated','WARNING'],['11:42:11','SNMP polling · 5 devices not responding','IMPACT']]
+        },
+        {
+          id:'INC-2051', title:'Server wing packet errors', description:'Application and database services are intermittently unreachable. The affected segment shows a sudden rise in interface errors.', site:'Bengaluru HQ', service:'Server LAN', detected:'11:48:32', failedEdge:'distA-accessA',
+          telemetry:'Interface is UP, but CRC / input errors are climbing rapidly. Optical receive power is below the expected range.',
+          cause:'fiber_degraded',
+          diagnoses:[
+            { id:'routing', text:'A routing adjacency has been lost', correct:false },
+            { id:'fiber_degraded', text:'The fiber path or transceiver is degraded, causing CRC errors', correct:true },
+            { id:'snmp', text:'SNMP credentials have expired on the servers', correct:false }
+          ],
+          fixes:[
+            { id:'restart_services', text:'Restart the application and database services', correct:false },
+            { id:'replace_fiber', text:'Inspect/clean the optics, replace the patch lead if needed, then verify optical levels', correct:true },
+            { id:'rotate_snmp', text:'Update SNMP credentials and rediscover the devices', correct:false }
+          ],
+          explanation:'The physical link is degraded. Clean and reseat the optics, inspect the fiber, replace the patch lead if required, and validate optical receive power plus CRC counters before closing the incident.',
+          logs:[['11:48:32','IF-MIB · Gi1/0/1 input error rate crossed threshold','WARNING'],['11:48:35','Interface telemetry · CRC counter increasing','CRITICAL'],['11:48:39','Service monitor · application path packet loss detected','IMPACT']]
+        },
+        {
+          id:'INC-2057', title:'ERP application path unavailable', description:'The ERP service is unreachable from the campus core even though the application host is healthy. Trace the path and identify the network-side fault.', site:'Bengaluru HQ', service:'ERP application', detected:'12:03:17', failedEdge:'core-firewall',
+          telemetry:'Physical interface is UP. The firewall reports its routing peer as DOWN following a recent configuration change.',
+          cause:'routing_peer',
+          diagnoses:[
+            { id:'power', text:'The firewall has lost power', correct:false },
+            { id:'routing_peer', text:'A routing adjacency / peer configuration was disrupted', correct:true },
+            { id:'dns', text:'The ERP hostname is missing from DNS', correct:false }
+          ],
+          fixes:[
+            { id:'power_cycle', text:'Power-cycle the firewall appliance', correct:false },
+            { id:'restore_peer', text:'Restore the routing peer configuration and verify adjacency and route exchange', correct:true },
+            { id:'flush_dns', text:'Flush client DNS caches and recreate the ERP record', correct:false }
+          ],
+          explanation:'The physical link is healthy; the routing peer dropped after a configuration change. Restore the last known-good peer configuration, verify the adjacency, and confirm the ERP route is present.',
+          logs:[['12:03:17','IF-MIB · Gi1/0/1 physical state remains UP','INFO'],['12:03:20','Firewall telemetry · routing peer state changed to DOWN','CRITICAL'],['12:03:25','Service monitor · ERP route no longer reachable','IMPACT']]
+        }
+      ];
+
+      const extraTemplates = [
+        ['VLAN trunk mismatch','A trunk is forwarding the wrong VLAN set, isolating a department.','core-distA','Trunk is UP. Allowed VLAN list does not contain VLAN 120. MAC learning for VLAN 120 has stopped.','vlan','VLAN 120 is missing from the trunk allowed list','Restore VLAN 120 on the trunk and verify forwarding'],
+        ['DHCP relay missing','New clients cannot obtain an IP address.','distB-accessB','Link is UP. DHCPDISCOVER packets are seen, but no DHCP relay forwarding occurs.','dhcp','DHCP relay helper address is missing','Restore the correct DHCP relay helper address'],
+        ['Firewall policy block','Application sessions fail after a security policy update.','firewall-app','Link is UP. Firewall deny counters rise for TCP 443 to the ERP subnet.','acl','A firewall policy is denying application traffic','Restore the approved TCP 443 allow rule'],
+        ['Duplicate IP conflict','Intermittent connectivity appears on the server segment.','accessA-db','ARP inspection reports two MAC addresses advertising the same IPv4 address.','duplicate','Two hosts share an IPv4 address','Assign unique addresses and clear stale ARP entries'],
+        ['Spanning tree loop','Broadcast traffic floods the access layer.','core-distB','Interface counters show excessive broadcasts. STP topology changes are repeating.','stp','A switching loop is causing a broadcast storm','Remove the loop and restore correct STP protections'],
+        ['Optical transceiver degradation','Remote access switches are flapping.','core-distA','Optical receive power is low and CRC errors are increasing.','optic','A degraded optical transceiver or fiber path','Inspect optics and replace faulty fiber or transceiver'],
+        ['MTU black hole','Large application requests fail while small pings succeed.','core-firewall','Small ICMP packets pass; large packets with DF set fail on the path.','mtu','A path MTU mismatch is dropping large packets','Align interface MTU and permit PMTUD messages'],
+        ['OSPF neighbor lost','Remote routes disappear from the routing table.','wan-core','Physical link UP; OSPF neighbor remains DOWN after authentication change.','ospf','OSPF adjacency authentication mismatch','Restore matching OSPF authentication on peers'],
+        ['Port security violation','A workstation is blocked after moving desks.','accessB-printer','Switch reports a port-security violation and err-disabled interface.','portsec','Port security has blocked a new MAC address','Validate device identity and update the approved MAC policy'],
+        ['PoE budget exceeded','Wireless access points lose power during peak load.','accessB-ap1','PoE controller shows insufficient available power; AP port power denied.','poe','PoE power budget is exhausted','Rebalance PoE loads or increase available power budget'],
+        ['Interface duplex mismatch','Users report slow, unreliable connectivity.','distA-accessA','Late collisions and FCS errors rise; duplex differs between endpoints.','duplex','Link endpoints have mismatched duplex settings','Align speed and duplex on both endpoints'],
+        ['DNS forwarding failure','ERP hostname lookups time out, but direct IP tests succeed.','firewall-app','IP connectivity works. DNS forwarding queries time out upstream.','dns','DNS forwarder is unreachable or misconfigured','Restore the correct reachable DNS forwarder'],
+        ['SNMP credentials mismatch','Monitoring loses visibility although devices are online.','core-distB','ICMP succeeds. SNMPv3 requests fail with authentication errors.','snmp','SNMPv3 credentials do not match','Update the monitoring SNMPv3 credentials securely'],
+        ['Route missing to branch','Traffic to the branch subnet has no next hop.','wan-core','Route lookup returns no match for the remote branch subnet.','route','A required route is missing','Restore the approved route and verify next-hop reachability'],
+        ['Interface utilization spike','Video calls suffer jitter and packet drops.','core-distA','Outbound utilization 99%; queue drops climb during bursts.','capacity','Uplink congestion is dropping traffic','Apply approved QoS and address uplink capacity'],
+        ['NTP time drift','Event correlation is unreliable across monitoring devices.','core-firewall','Device clock differs by 11 minutes; NTP peer unreachable.','ntp','Time synchronization is broken','Restore reachable NTP servers and verify synchronization'],
+        ['BGP session failure','WAN prefixes disappear following a router update.','wan-core','TCP 179 cannot establish and BGP peer remains Idle.','bgp','BGP neighbor connectivity or configuration is broken','Restore approved BGP peer settings and verify session'],
+      ];
+      extraTemplates.forEach((t,i)=>{
+        const [title,description,failedEdge,telemetry,cause,correctCause,correctFix]=t;
+        const edge=edges.find(e=>e.id===failedEdge);
+        scenarios.push({id:'INC-'+(2100+i),title,description,site:'Bengaluru HQ',service:'Enterprise network',detected:'SIMULATED',failedEdge,telemetry,cause,
+          diagnoses:[{id:'generic'+i,text:'The endpoint application requires a restart',correct:false},{id:cause,text:correctCause,correct:true},{id:'dns_generic'+i,text:'The public DNS record has expired',correct:false}],
+          fixes:[{id:'restart'+i,text:'Restart every affected endpoint',correct:false},{id:'repair'+i,text:correctFix+'; verify service recovery',correct:true},{id:'ignore'+i,text:'Disable all monitoring alerts',correct:false}],
+          explanation:correctCause+'. '+correctFix+'. Confirm normal telemetry after remediation.',
+          logs:[['12:00:00','Network monitor · '+edge.iface+' incident telemetry detected','WARNING'],['12:00:01','Topology engine · service impact analysis updated','CRITICAL'],['12:00:03','NOC console · investigation required','IMPACT']]});
+      });
+      const TOTAL_ROUNDS=5,SECONDS=90;
+      let roundScenarios=[],playerName='',completed=0,roundNo=0,secondsLeft=SECONDS,timerHandle=null,gameActive=false,roundFinished=false;
+      let scenarioIndex = 0;
+      let selectedEdge = null;
+      let selectedDiagnosis = null;
+      let selectedFix = null;
+      let score = 0;
+      let mistakes = 0;
+      let solved = false;
+      let finalScreen = false;
+      const $ = id => document.getElementById(id);
+      const current = () => roundScenarios[scenarioIndex] || scenarios[0];
+
+      function svgEl(tag, attrs = {}) {
+        const el = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, String(v)));
+        return el;
+      }
+      function reachableNodes() {
+        const seen = new Set(['wan']);
+        const queue = ['wan'];
+        while (queue.length) {
+          const here = queue.shift();
+          edges.forEach(edge => {
+            if (edge.id === current().failedEdge && !solved) return;
+            if (edge.a === here && !seen.has(edge.b)) { seen.add(edge.b); queue.push(edge.b); }
+            if (edge.b === here && !seen.has(edge.a)) { seen.add(edge.a); queue.push(edge.a); }
+          });
+        }
+        return seen;
+      }
+      function impactedNames(reachable) {
+        return nodes.filter(n => !reachable.has(n.id)).map(n => n.name);
+      }
+      function renderTopology() {
+        const reachable = reachableNodes();
+        const edgeLayer = $('edgeLayer');
+        const nodeLayer = $('nodeLayer');
+        edgeLayer.replaceChildren();
+        nodeLayer.replaceChildren();
+        edges.forEach(edge => {
+          const a = nodeById[edge.a], b = nodeById[edge.b];
+          const isFailed = edge.id === current().failedEdge && !solved;
+          const isReachable = reachable.has(edge.a) && reachable.has(edge.b);
+          const group = svgEl('g', { class:'edge-group', 'data-edge':edge.id });
+          const visible = svgEl('line', { x1:a.x, y1:a.y, x2:b.x, y2:b.y, class:`edge ${isFailed ? 'failed' : (isReachable ? 'active' : '')}` });
+          const hit = svgEl('line', { x1:a.x, y1:a.y, x2:b.x, y2:b.y, class:'edge-hit', tabindex:'0', role:'button', 'aria-label':`Inspect link ${edge.iface} between ${a.name} and ${b.name}` });
+          hit.addEventListener('click', () => selectEdge(edge.id));
+          hit.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectEdge(edge.id); } });
+          group.append(visible, hit);
+          edgeLayer.append(group);
+        });
+        nodes.forEach(node => {
+          const isReachable = reachable.has(node.id);
+          const isAffected = !isReachable;
+          const group = svgEl('g', { class:`node ${isReachable ? 'up' : 'affected'} ${node.root ? 'root' : ''}`, transform:`translate(${node.x} ${node.y})` });
+          const ring = svgEl('circle', { class:'node-ring', r:25 });
+          const core = svgEl('circle', { class:'node-core', r:19 });
+          const icon = svgEl('text', { class:'node-icon', x:0, y:1 }); icon.textContent = node.icon;
+          const name = svgEl('text', { class:'node-name', x:0, y:43 }); name.textContent = node.name;
+          const type = svgEl('text', { class:'node-type', x:0, y:56 }); type.textContent = node.type;
+          const status = svgEl('text', { class:'node-status', x:0, y:-31 }); status.textContent = isReachable ? '● UP' : '× IMPACTED';
+          group.append(ring, core, icon, name, type, status);
+          nodeLayer.append(group);
+        });
+        const count = impactedNames(reachable).length;
+        $('availability').innerHTML = `${Math.round((reachable.size / nodes.length) * 100)}<small>%</small>`;
+        $('affectedCount').innerHTML = `${String(count).padStart(2,'0')}<small> / ${nodes.length}</small>`;
+        $('incidentCount').innerHTML = solved ? `00<small> active</small>` : `01<small> critical</small>`;
+        $('topologyState').classList.toggle('ok', solved);
+        $('topologyState').innerHTML = solved ? '<span class="live-dot"></span> ALL SYSTEMS NORMAL' : '<span class="live-dot" style="background:var(--red);box-shadow:0 0 10px var(--red)"></span> DEGRADED';
+        $('impactSummary').innerHTML = solved ? '<strong>Impact radius cleared:</strong> all 13 devices are reachable again.' : `<strong>Impact radius:</strong> ${count} device${count === 1 ? '' : 's'} unreachable — ${impactedNames(reachable).join(', ')}.`;
+      }
+      function selectEdge(edgeId) {
+        if (solved || !gameActive || roundFinished) return;
+        selectedEdge = edgeId;
+        const edge = edges.find(e => e.id === edgeId);
+        const isCorrect = edgeId === current().failedEdge;
+        document.querySelectorAll('.edge-group').forEach(g => g.style.opacity = g.dataset.edge === edgeId ? '1' : '.65');
+        if (!isCorrect) {
+          showFeedback('That link is currently healthy. Look for the broken red path and inspect that interface.', 'bad');
+          toast('That is not the failed link. Keep tracing the red path.');
+          return;
+        }
+        $('inspectBox').innerHTML = `<strong>${edge.label}</strong><br>${current().telemetry}`;
+        $('inspectGrid').style.display = 'grid';
+        $('inspectInterface').textContent = edge.iface;
+        $('inspectA').textContent = nodeById[edge.a].name;
+        $('inspectB').textContent = nodeById[edge.b].name;
+        $('diagnoseHint').textContent = 'SELECT ONE';
+        $('step1').classList.add('done'); $('step2').classList.add('active');
+        renderChoices('diagnosisChoices', current().diagnoses, 'diagnosis');
+        $('resolveHint').textContent = 'DIAGNOSE FIRST';
+        showFeedback('Link inspected. Use the telemetry above to identify the most likely root cause.', 'info');
+        addLog('12:14:02', `Topology inspector · ${edge.iface} selected for analysis`, 'INFO', true);
+      }
+      function renderChoices(containerId, choices, type) {
+        const container = $(containerId);
+        container.replaceChildren();
+        choices.forEach((choice, index) => {
+          const btn = document.createElement('button');
+          btn.type = 'button'; btn.className = 'choice';
+          const mark = document.createElement('span'); mark.className = 'choice-mark'; mark.textContent = String.fromCharCode(65 + index);
+          const text = document.createElement('span'); text.className = 'choice-text'; text.textContent = choice.text;
+          btn.append(mark, text);
+          btn.addEventListener('click', () => {
+            if (solved || !gameActive || roundFinished) return;
+            container.querySelectorAll('.choice').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            if (type === 'diagnosis') {
+              selectedDiagnosis = choice.id;
+              selectedFix = null;
+              $('step2').classList.add('active');
+              $('resolveHint').textContent = 'SELECT ONE';
+              renderChoices('resolutionChoices', current().fixes, 'fix');
+              $('step3').classList.remove('active');
+            } else {
+              selectedFix = choice.id;
+              $('step3').classList.add('active');
+            }
+            $('submitBtn').disabled = !(selectedEdge === current().failedEdge && selectedDiagnosis && selectedFix);
+            clearFeedback();
+          });
+          container.append(btn);
+        });
+      }
+      function showFeedback(message, kind) {
+        const box = $('feedback');
+        box.textContent = message;
+        box.className = `feedback show ${kind}`;
+      }
+      function clearFeedback() { $('feedback').className = 'feedback'; $('feedback').textContent = ''; }
+      function addLog(time, message, level, append = false) {
+        const logs = $('logs');
+        if (!append) logs.replaceChildren();
+        const row = document.createElement('div'); row.className = 'log';
+        const timeEl = document.createElement('time'); timeEl.textContent = time;
+        const msg = document.createElement('span'); msg.textContent = message;
+        const status = document.createElement('em'); status.textContent = level;
+        if (level === 'INFO' || level === 'RESOLVED') status.classList.add('ok');
+        row.append(timeEl, msg, status); logs.append(row);
+      }
+      function validateFix() {
+        if (solved || roundFinished || !gameActive || !selectedDiagnosis || !selectedFix) return;
+        const scenario = current();
+        const diagnosisCorrect = selectedDiagnosis === scenario.cause;
+        const fixCorrect = scenario.fixes.find(f => f.id === selectedFix)?.correct === true;
+        if (!diagnosisCorrect || !fixCorrect) {
+          mistakes++;
+          score = Math.max(0, score - 10);
+          $('score').innerHTML = `${String(score).padStart(3,'0')}<small> pts</small>`;
+          const message = !diagnosisCorrect && !fixCorrect
+            ? 'Not quite. The diagnosis and proposed action do not match the telemetry. Re-read the evidence and try again.'
+            : (!diagnosisCorrect ? 'The remediation may sound reasonable, but the root-cause diagnosis does not match the link telemetry.' : 'Good diagnosis, but that action will not correct the underlying fault. Choose a fix that addresses the identified cause.');
+          showFeedback(`${message} (−10 points)`, 'bad'); if(mistakes>=2){failRound('CRITICAL OUTAGE','Two incorrect repairs were attempted. The simulated network remains degraded.');return}
+          addLog('12:14:18', 'NOC console · proposed resolution did not clear the incident', 'WARNING', true);
+          return;
+        }
+        solved = true; roundFinished = true; completed++; stopTimer();
+        score += Math.max(40, 100 - mistakes * 10);
+        $('score').innerHTML = `${String(score).padStart(3,'0')}<small> pts</small>`;
+        $('submitBtn').disabled = true;
+        $('submitBtn').textContent = 'Incident resolved ✓';
+        $('diagnosisChoices').querySelectorAll('button').forEach(b => b.disabled = true);
+        $('resolutionChoices').querySelectorAll('button').forEach(b => b.disabled = true);
+        $('step1').classList.add('done'); $('step2').classList.add('done'); $('step3').classList.add('done');
+        $('step1').classList.remove('active'); $('step2').classList.remove('active'); $('step3').classList.remove('active');
+        $('inspectState').textContent = 'UP'; $('inspectState').style.color = 'var(--green)';
+        $('inspectBox').innerHTML = `<strong>Resolution applied successfully.</strong><br>${scenario.explanation}`;
+        renderTopology();
+        showFeedback('Correct diagnosis and remediation. The failed path is restored and the impact has cleared.', 'good');
+        addLog('12:14:31', `NOC console · ${edges.find(e => e.id === scenario.failedEdge).iface} restored; downstream polling recovered`, 'RESOLVED', true);
+        $('completeOverlay').className='complete-overlay success';celebrate();$('completeIcon').textContent='✓';$('completeTitle').textContent = 'Network restored!';
+        $('completeText').textContent = `${scenario.explanation} All ${nodes.length} devices are reachable again.`;
+        $('completeScore').textContent = `${score} pts`;
+        $('nextBtn').textContent = scenarioIndex === TOTAL_ROUNDS - 1 ? 'View final result →' : 'Next challenge →';
+        window.setTimeout(() => $('completeOverlay').classList.add('show'), 650);
+      }
+      function loadScenario(index) {
+        scenarioIndex = index;
+        finalScreen = false;
+        selectedEdge = selectedDiagnosis = selectedFix = null;
+        solved = false; mistakes = 0; roundFinished=false;secondsLeft=SECONDS;startTimer();
+        const s = current();
+        $('roundLabel').innerHTML = `${String(index + 1).padStart(2,'0')} <span style="color:#617e99;font-size:14px">/ 05</span>`; $('progressFill').style.width=(index/TOTAL_ROUNDS*100)+'%';
+        $('incidentId').textContent = s.id;
+        $('incidentTitle').textContent = s.title;
+        $('incidentDescription').textContent = s.description;
+        $('siteName').textContent = s.site;
+        $('detectedAt').textContent = s.detected;
+        $('serviceName').textContent = s.service;
+        $('inspectBox').innerHTML = 'Click the <strong>red, broken link</strong> in the topology to inspect both endpoints and interface telemetry.';
+        $('inspectGrid').style.display = 'none';
+        $('inspectState').textContent = 'DOWN'; $('inspectState').style.color = 'var(--red)';
+        $('diagnoseHint').textContent = 'LOCKED · INSPECT FIRST';
+        $('resolveHint').textContent = 'LOCKED · DIAGNOSE FIRST';
+        $('diagnosisChoices').innerHTML = '<button class="choice" disabled><span class="choice-mark">A</span><span class="choice-text">Inspect the failed link to unlock diagnosis options.</span></button>';
+        $('resolutionChoices').innerHTML = '<button class="choice" disabled><span class="choice-mark">A</span><span class="choice-text">Choose a likely cause to unlock remediation options.</span></button>';
+        $('step1').className = 'step active'; $('step2').className = 'step'; $('step3').className = 'step';
+        $('submitBtn').disabled = true; $('submitBtn').textContent = 'Validate & restore network →';
+        $('completeOverlay').className='complete-overlay';
+        clearFeedback();
+        const failed = edges.find(e => e.id === s.failedEdge);
+        $('logs').replaceChildren();
+        s.logs.forEach(l => addLog(l[0], l[1], l[2], true));
+        $('topologyState').classList.remove('ok');
+        document.querySelectorAll('.edge-group').forEach(g => g.style.opacity = '1');
+        renderTopology();
+      }
+      function resetGame() {
+        score = 0; completed=0; roundScenarios=[...scenarios];for(let i=roundScenarios.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[roundScenarios[i],roundScenarios[j]]=[roundScenarios[j],roundScenarios[i]]}roundScenarios=roundScenarios.slice(0,TOTAL_ROUNDS);
+        $('score').innerHTML = '000<small> pts</small>';
+        loadScenario(0);
+        toast('Challenge reset. Start tracing the network again.');
+      }
+      function toast(message) {
+        const el = $('toast'); el.textContent = message; el.classList.add('show');
+        window.clearTimeout(toast._timer); toast._timer = window.setTimeout(() => el.classList.remove('show'), 2400);
+      }
+      $('submitBtn').addEventListener('click', validateFix);
+      $('resetBtn').addEventListener('click', resetGame);
+      $('nextBtn').addEventListener('click', () => {
+        if (finalScreen) {
+          gameActive=false;stopTimer();$('startOverlay').classList.remove('hidden');$('completeOverlay').className='complete-overlay';
+          return;
+        }
+        if (scenarioIndex < TOTAL_ROUNDS - 1) {
+          loadScenario(scenarioIndex + 1);
+          return;
+        }
+        finalScreen = true;
+        $('completeIcon').textContent = '★';
+        $('completeOverlay').className='complete-overlay success show';$('completeIcon').textContent = '★';$('completeTitle').textContent = 'Mission report complete!';
+        $('completeText').textContent = `You restored ${completed} of ${TOTAL_ROUNDS} incidents. Your result will be submitted to the summit leaderboard.`;
+        $('completeScore').textContent = `${score} pts`;
+        $('nextBtn').textContent = 'Play again ↻';$('progressFill').style.width='100%';saveScore();
+      });
+      function startTimer(){stopTimer();updateTimer();timerHandle=setInterval(()=>{if(!gameActive||roundFinished)return;secondsLeft--;updateTimer();if(secondsLeft<=0)failRound('TIME EXPIRED','The incident was not resolved before the response window closed.')},1000)}
+      function stopTimer(){if(timerHandle){clearInterval(timerHandle);timerHandle=null}}
+      function updateTimer(){const t=Math.max(0,secondsLeft);$('timerPill').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');$('timerPill').classList.toggle('urgent',t<=15)}
+      function failRound(title,reason){if(roundFinished)return;roundFinished=true;stopTimer();$('completeOverlay').className='complete-overlay failure show';$('completeIcon').textContent='⚠';$('completeTitle').textContent=title;$('completeText').textContent=reason+' '+current().explanation;$('completeScore').textContent=score+' pts';$('nextBtn').textContent=scenarioIndex===TOTAL_ROUNDS-1?'View final result →':'Next incident →'}
+      function celebrate(){for(let i=0;i<42;i++){const c=document.createElement('i');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.background=['#4de2dd','#42d69a','#ffc56b','#a78bfa'][i%4];c.style.animationDelay=Math.random()*.35+'s';document.body.append(c);setTimeout(()=>c.remove(),2200)}}
+      function localScores(){try{return JSON.parse(localStorage.getItem('aarkay_detective_scores_v1')||'[]')}catch{return []}}
+      function saveScore(){const entry={nickname:playerName,score,completed,total:TOTAL_ROUNDS,created_at:new Date().toISOString()};const scores=localScores();scores.push(entry);localStorage.setItem('aarkay_detective_scores_v1',JSON.stringify(scores.slice(-100)));$('uploadStatus').textContent='Saving score…';window.SummitBoard.submit(entry).then(msg=>{$('uploadStatus').textContent=msg})}
+      function startNewGame(){const name=$('playerName').value.trim();if(name.length<2){alert('Enter a nickname with at least 2 characters.');return}playerName=name;gameActive=true;$('startOverlay').classList.add('hidden');resetGame()}
+      $('startGame').addEventListener('click',startNewGame);
+      $('playerName').addEventListener('keydown',e=>{if(e.key==='Enter')startNewGame()});
+      $('openBoardStart').addEventListener('click',()=>window.SummitBoard.open());
+      $('refreshBoard').addEventListener('click',()=>window.SummitBoard.load());
+      $('closeBoard').addEventListener('click',()=>window.SummitBoard.close());
+      if(new URLSearchParams(location.search).get('mode')==='display'){$('startOverlay').classList.add('hidden');window.addEventListener('load',()=>window.SummitBoard.open(true))}
+    })();
+  </script>
+  <script src="leaderboard.js"></script>
+</body>
+</html>
