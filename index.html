@@ -212,6 +212,25 @@
 #progressTrack{height:6px;background:#233b52;border-radius:8px;overflow:hidden;margin:0 0 15px}#progressFill{height:100%;width:0;background:linear-gradient(90deg,#42d69a,#4de2dd);transition:width .4s}
 #uploadStatus{color:#a8c6dd;font-size:12px;min-height:18px}.confetti{position:fixed;top:-15px;width:9px;height:14px;z-index:55;pointer-events:none;animation:confettiFall 1.7s linear forwards}@keyframes confettiFall{to{transform:translateY(110vh) rotate(600deg);opacity:0}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* Theme switcher: light overrides; dark remains the original v4 appearance. */
+.theme-toggle{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:var(--panel-2);color:var(--text);cursor:pointer;font-size:12px;font-weight:750;white-space:nowrap}
+.theme-toggle:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+html[data-theme="light"]{--bg:#f1f6fc;--panel:#ffffff;--panel-2:#e7f0fb;--line:rgba(41,77,110,.23);--muted:#4d647b;--text:#12273b;--cyan:#087c89;--blue:#1764ba;--green:#087c56;--amber:#a15d00;--red:#c92c48;--purple:#6844bd;--shadow:0 14px 40px rgba(37,72,105,.12);background:#f1f6fc;color-scheme:light}
+html[data-theme="light"] body{background:linear-gradient(155deg,#f5faff,#e7f1fc 58%,#f7fbff);color:var(--text)}
+html[data-theme="light"] .panel,html[data-theme="light"] .metric{background:linear-gradient(150deg,#fff,#f2f7fd)}
+html[data-theme="light"] .hero-copy,html[data-theme="light"] .incident p,html[data-theme="light"] .inspect-box,html[data-theme="light"] .how-item,html[data-theme="light"] .impact-strip,html[data-theme="light"] .log,html[data-theme="light"] .choice,html[data-theme="light"] .footer{color:#425d75}
+html[data-theme="light"] .panel-title,html[data-theme="light"] .section-label,html[data-theme="light"] .incident h2,html[data-theme="light"] .subhead strong,html[data-theme="light"] .brand-name{color:#142e47}
+html[data-theme="light"] .metric,html[data-theme="light"] .round-badge,html[data-theme="light"] .inspect-box,html[data-theme="light"] .inspect-cell,html[data-theme="light"] .choice,html[data-theme="light"] .complete-score{background:#edf4fc}
+html[data-theme="light"] .choice:hover:not(:disabled),html[data-theme="light"] .choice.selected{background:#d5f1f0;color:#114953;border-color:#087c89}
+html[data-theme="light"] .inspect-box strong,html[data-theme="light"] .impact-strip strong,html[data-theme="light"] .how-item strong{color:#16354d!important}
+html[data-theme="light"] .node-name{fill:#18344d}html[data-theme="light"] .node-type,html[data-theme="light"] .edge-label{fill:#4c647b}html[data-theme="light"] .node-ring{fill:#f0f7ff}html[data-theme="light"] .node-core{fill:#dcebf8}html[data-theme="light"] .topology-bg-grid{opacity:.17}
+html[data-theme="light"] .event-pill{color:#075c65;background:#d9f3f1}html[data-theme="light"] .topology-state{color:#a3203d}html[data-theme="light"] .topology-state.ok{color:#076847}
+html[data-theme="light"] .start-card,html[data-theme="light"] .complete-card{background:linear-gradient(145deg,#fff,#e9f3fd);color:#132b40;border-color:#a9c8dc}html[data-theme="light"] .start-card p,html[data-theme="light"] .complete-card p{color:#4c657c}html[data-theme="light"] .start-card input{background:white;color:#142b41}
+html[data-theme="light"] #startOverlay{background:rgba(223,237,250,.97)}html[data-theme="light"] #leaderboardOverlay{background:#f1f6fc;color:#142b41}html[data-theme="light"] .board-table td{color:#1b344c}html[data-theme="light"] .board-table th{color:#087c89}
+html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme="light"] .feedback.info{color:#164d80}html[data-theme="light"] .feedback.good{color:#096943}html[data-theme="light"] .feedback.bad{color:#a3233a}
+@media(max-width:600px){.topbar-actions{justify-content:flex-end}.theme-toggle{padding:8px 10px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -226,7 +245,7 @@
           <div class="brand-sub">NETWORK OPERATIONS SIMULATOR</div>
         </div>
       </div>
-      <div class="event-pill"><span class="live-dot"></span> BENGALURU TECH SUMMIT · INTERACTIVE DEMO</div>
+      <div class="topbar-actions"><div class="event-pill"><span class="live-dot"></span> BENGALURU TECH SUMMIT · INTERACTIVE DEMO</div><button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to light theme" aria-pressed="false">☀ Light mode</button></div>
     </header>
 
     <section class="hero">
@@ -351,6 +370,24 @@
 
 <div id="startOverlay"><div class="start-card"><div class="eyebrow">BENGALURU TECH SUMMIT · AARKAY ENGINEERING ARENA</div><h1>NETWORK <span style="color:#4de2dd">DETECTIVE</span></h1><p>Enter the NOC. Inspect a real-looking enterprise topology, diagnose incidents from telemetry and restore services before the clock runs out.</p><p>⚡ 20 incidents · 🎲 5 randomized missions · ⏱ 90 seconds each · 🏆 Shared leaderboard</p><label for="playerName">Your detective name</label><input id="playerName" maxlength="24" placeholder="Enter nickname (2–24 characters)" autocomplete="nickname"><button class="btn btn-primary" id="startGame" type="button">Start investigation →</button><button class="btn btn-quiet" id="openBoardStart" type="button">🏆 Leaderboard</button><p style="font-size:11px">Simulated network — no production devices are modified.</p></div></div>
 <div id="leaderboardOverlay"><div class="board-wrap"><div class="board-head"><div><div class="eyebrow">ARKAYNMS · SUMMIT-WIDE RANKINGS</div><h1>DETECTIVE LEADERBOARD</h1></div><div><button class="btn btn-quiet" id="refreshBoard" type="button">↻ Refresh</button> <button class="btn btn-primary" id="closeBoard" type="button">Back to game</button></div></div><p id="boardMessage">Loading shared scores…</p><p id="boardSync"></p><div style="overflow-x:auto"><table class="board-table"><thead><tr><th>Rank</th><th>Detective</th><th>Score</th><th>Resolved</th><th>Submitted</th></tr></thead><tbody id="boardRows"></tbody></table></div></div></div>
+  <script>
+(function(){
+  const key='arkaynms-detective-theme';
+  let saved='dark';
+  try { saved=localStorage.getItem(key)==='light'?'light':'dark'; } catch(e) {}
+  const root=document.documentElement;
+  const button=document.getElementById('themeToggle');
+  function apply(theme){
+    root.dataset.theme=theme;
+    button.textContent=theme==='dark'?'☀ Light mode':'☾ Dark mode';
+    button.setAttribute('aria-label',theme==='dark'?'Switch to light theme':'Switch to dark theme');
+    button.setAttribute('aria-pressed',String(theme==='light'));
+    try {localStorage.setItem(key,theme);}catch(e){}
+  }
+  apply(saved);
+  button.addEventListener('click',()=>apply(root.dataset.theme==='dark'?'light':'dark'));
+})();
+</script>
   <script src="config.js"></script>
   <script>
     (() => {
