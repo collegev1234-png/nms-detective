@@ -286,7 +286,7 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
           <span class="legend-item"><i class="legend-dot red"></i> Unreachable</span>
           <span class="legend-item"><i class="legend-line"></i> Active link</span>
           <span class="legend-item"><i class="legend-line red"></i> Failed link</span>
-          <span class="hint">↖ Select a highlighted incident path to inspect telemetry</span>
+          <span class="hint">↖ Tap the red dotted line to start</span>
         </div>
         <div class="impact-strip"><span class="impact-icon">⚠</span><span id="impactSummary"><strong>Impact radius:</strong> 5 devices are unreachable beyond the failed uplink.</span></div>
       </section>
@@ -309,8 +309,8 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
             <div class="step" id="step2"><b>2</b> Diagnose</div><div class="step-line"></div>
             <div class="step" id="step3"><b>3</b> Resolve</div>
           </div>
-          <div class="section-label">1. Inspect the fault <small>SELECT THE FAILED LINK</small></div>
-          <div class="inspect-box" id="inspectBox">Click the <strong>red, broken link</strong> in the topology to inspect both endpoints and interface telemetry.</div>
+          <div class="section-label">1. Find the problem <small>TAP THE RED LINE</small></div>
+          <div class="inspect-box" id="inspectBox">Tap the <strong>red dotted line</strong> on the network picture. Then pick one answer in each step.</div>
           <div class="inspect-grid" id="inspectGrid" style="display:none">
             <div class="inspect-cell"><small>Interface</small><strong id="inspectInterface">—</strong></div>
             <div class="inspect-cell"><small>Link state</small><strong style="color:var(--red)" id="inspectState">DOWN</strong></div>
@@ -318,19 +318,19 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
             <div class="inspect-cell"><small>Endpoint B</small><strong id="inspectB">—</strong></div>
           </div>
 
-          <div class="section-label">2. What is the likely cause? <small id="diagnoseHint">LOCKED · INSPECT FIRST</small></div>
+          <div class="section-label">2. What went wrong? <small id="diagnoseHint">LOCKED · INSPECT FIRST</small></div>
           <div class="choices" id="diagnosisChoices">
             <button class="choice" disabled><span class="choice-mark">A</span><span class="choice-text">Inspect the failed link to unlock diagnosis options.</span></button>
           </div>
 
-          <div class="section-label">3. What would you do? <small id="resolveHint">LOCKED · DIAGNOSE FIRST</small></div>
+          <div class="section-label">3. How would you fix it? <small id="resolveHint">LOCKED · DIAGNOSE FIRST</small></div>
           <div class="choices" id="resolutionChoices">
             <button class="choice" disabled><span class="choice-mark">A</span><span class="choice-text">Choose a likely cause to unlock remediation options.</span></button>
           </div>
-          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+          <button class="btn btn-quiet" id="hintBtn" type="button" style="margin-top:12px;width:100%;border:1px solid #4de2dd">💡 Need a hint? (free)</button><div class="feedback" id="feedback" role="status" aria-live="polite"></div>
           <div class="action-row">
             <button class="btn btn-quiet" id="resetBtn" type="button">Restart run</button>
-            <button class="btn btn-primary" id="submitBtn" type="button" disabled>Validate &amp; restore network →</button>
+            <button class="btn btn-primary" id="submitBtn" type="button" disabled>Fix the network →</button>
           </div>
         </section>
       </aside>
@@ -348,9 +348,9 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
       <section class="panel how-panel">
         <div class="subhead"><strong>How to play</strong><span>3 steps · 1 incident</span></div>
         <div class="how-list">
-          <div class="how-item"><b>1</b><span><strong style="color:#d9eafa">Inspect:</strong> select the failed link in the topology and read its interface telemetry.</span></div>
-          <div class="how-item"><b>2</b><span><strong style="color:#d9eafa">Diagnose:</strong> choose the most likely root cause based on the evidence.</span></div>
-          <div class="how-item"><b>3</b><span><strong style="color:#d9eafa">Resolve:</strong> select a remediation. A correct fix restores the affected devices.</span></div>
+          <div class="how-item"><b>1</b><span><strong style="color:#d9eafa">Inspect:</strong> tap the red dotted connection in the network picture.</span></div>
+          <div class="how-item"><b>2</b><span><strong style="color:#d9eafa">Diagnose:</strong> choose the answer that best matches the simple clue.</span></div>
+          <div class="how-item"><b>3</b><span><strong style="color:#d9eafa">Resolve:</strong> pick how to fix it. A correct fix restores the affected devices. Wrong answers are okay — try again!</span></div>
         </div>
       </section>
     </section>
@@ -368,7 +368,7 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
     </div>
   </div>
 
-<div id="startOverlay"><div class="start-card"><div class="eyebrow">BENGALURU TECH SUMMIT · AARKAY ENGINEERING ARENA</div><h1>NETWORK <span style="color:#4de2dd">DETECTIVE</span></h1><p>Enter the NOC. Inspect a real-looking enterprise topology, diagnose incidents from telemetry and restore services before the clock runs out.</p><p>⚡ 20 incidents · 🎲 5 randomized missions · ⏱ 90 seconds each · 🏆 Shared leaderboard</p><label for="playerName">Your detective name</label><input id="playerName" maxlength="24" placeholder="Enter nickname (2–24 characters)" autocomplete="nickname"><button class="btn btn-primary" id="startGame" type="button">Start investigation →</button><button class="btn btn-quiet" id="openBoardStart" type="button">🏆 Leaderboard</button><p style="font-size:11px">Simulated network — no production devices are modified.</p></div></div>
+<div id="startOverlay"><div class="start-card"><div class="eyebrow">BENGALURU TECH SUMMIT · AARKAY ENGINEERING ARENA</div><h1>NETWORK <span style="color:#4de2dd">DETECTIVE</span></h1><p>No networking experience needed! Find the red connection, choose what went wrong, and pick how to fix it. You can use hints and try again.</p><p>✨ 18 easy incidents · 🎲 5 random challenges · ⏱ 3 minutes each · 🏆 Shared leaderboard</p><label for="playerName">Your detective name</label><input id="playerName" maxlength="24" placeholder="Enter nickname (2–24 characters)" autocomplete="nickname"><button class="btn btn-primary" id="startGame" type="button">Start investigation →</button><button class="btn btn-quiet" id="openBoardStart" type="button">🏆 Leaderboard</button><p style="font-size:11px">Simulated network — no production devices are modified.</p></div></div>
 <div id="leaderboardOverlay"><div class="board-wrap"><div class="board-head"><div><div class="eyebrow">ARKAYNMS · SUMMIT-WIDE RANKINGS</div><h1>DETECTIVE LEADERBOARD</h1></div><div><button class="btn btn-quiet" id="refreshBoard" type="button">↻ Refresh</button> <button class="btn btn-primary" id="closeBoard" type="button">Back to game</button></div></div><p id="boardMessage">Loading shared scores…</p><p id="boardSync"></p><div style="overflow-x:auto"><table class="board-table"><thead><tr><th>Rank</th><th>Detective</th><th>Score</th><th>Resolved</th><th>Submitted</th></tr></thead><tbody id="boardRows"></tbody></table></div></div></div>
   <script>
 (function(){
@@ -526,10 +526,32 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
           explanation:correctCause+'. '+correctFix+'. Confirm normal telemetry after remediation.',
           logs:[['12:00:00','Network monitor · '+edge.iface+' incident telemetry detected','WARNING'],['12:00:01','NOC engine · '+service+' alarm correlated','CRITICAL'],['12:00:03','NOC console · investigation required','IMPACT']]});
       });
+
+      // Beginner-friendly incidents for public summit visitors.
+      const easyScenarios = [
+        {"id": "EASY-001", "title": "Wi-Fi is not working", "description": "People cannot connect to the office Wi-Fi.", "site": "Bengaluru HQ", "service": "Wi-Fi", "detected": "SIMULATED", "failedEdge": "accessB-ap1", "telemetry": "The Wi-Fi access point has no power.", "cause": "easy_0", "diagnoses": [{"id": "easy_0", "text": "The Wi-Fi access point is switched off or has no power.", "correct": true}, {"id": "wrong_0", "text": "The printer has run out of paper.", "correct": false}], "fixes": [{"id": "fix_0", "text": "Restore power to the Wi-Fi access point.", "correct": true}, {"id": "wrongfix_0", "text": "Replace the printer paper.", "correct": false}], "explanation": "The Wi-Fi access point is switched off or has no power. Restore power to the Wi-Fi access point.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-002", "title": "Internet connection is down", "description": "Employees cannot open any websites.", "site": "Bengaluru HQ", "service": "Internet", "detected": "SIMULATED", "failedEdge": "wan-core", "telemetry": "The internet cable is unplugged from the WAN router.", "cause": "easy_1", "diagnoses": [{"id": "easy_1", "text": "The internet cable is disconnected.", "correct": true}, {"id": "wrong_1", "text": "The meeting room projector is off.", "correct": false}], "fixes": [{"id": "fix_1", "text": "Reconnect the internet cable and check the connection.", "correct": true}, {"id": "wrongfix_1", "text": "Restart the projector.", "correct": false}], "explanation": "The internet cable is disconnected. Reconnect the internet cable and check the connection.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-003", "title": "Printer is offline", "description": "Nobody can print to the shared printer.", "site": "Bengaluru HQ", "service": "Office printing", "detected": "SIMULATED", "failedEdge": "accessB-printer", "telemetry": "The printer network cable is unplugged.", "cause": "easy_2", "diagnoses": [{"id": "easy_2", "text": "The printer has lost its network connection.", "correct": true}, {"id": "wrong_2", "text": "The Wi-Fi password has expired.", "correct": false}], "fixes": [{"id": "fix_2", "text": "Reconnect the printer network cable.", "correct": true}, {"id": "wrongfix_2", "text": "Change the Wi-Fi password.", "correct": false}], "explanation": "The printer has lost its network connection. Reconnect the printer network cable.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-004", "title": "Server is unreachable", "description": "The company application is not loading.", "site": "Bengaluru HQ", "service": "Applications", "detected": "SIMULATED", "failedEdge": "accessA-app", "telemetry": "The application server network port is disabled.", "cause": "easy_3", "diagnoses": [{"id": "easy_3", "text": "The application server has lost network access.", "correct": true}, {"id": "wrong_3", "text": "The office printer is jammed.", "correct": false}], "fixes": [{"id": "fix_3", "text": "Enable the server network port and check connectivity.", "correct": true}, {"id": "wrongfix_3", "text": "Clear the printer jam.", "correct": false}], "explanation": "The application server has lost network access. Enable the server network port and check connectivity.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-005", "title": "Database connection lost", "description": "The application cannot connect to its database.", "site": "Bengaluru HQ", "service": "Database", "detected": "SIMULATED", "failedEdge": "accessA-db", "telemetry": "The database server network cable is disconnected.", "cause": "easy_4", "diagnoses": [{"id": "easy_4", "text": "The database server is disconnected from the network.", "correct": true}, {"id": "wrong_4", "text": "The guest Wi-Fi is crowded.", "correct": false}], "fixes": [{"id": "fix_4", "text": "Reconnect the database server network cable.", "correct": true}, {"id": "wrongfix_4", "text": "Move guests to another Wi-Fi channel.", "correct": false}], "explanation": "The database server is disconnected from the network. Reconnect the database server network cable.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-006", "title": "East Wing has no network", "description": "Computers in the East Wing cannot connect.", "site": "Bengaluru HQ", "service": "Office network", "detected": "SIMULATED", "failedEdge": "core-distB", "telemetry": "The East Wing switch uplink is disconnected.", "cause": "easy_5", "diagnoses": [{"id": "easy_5", "text": "The East Wing switch connection is down.", "correct": true}, {"id": "wrong_5", "text": "The office clock is wrong.", "correct": false}], "fixes": [{"id": "fix_5", "text": "Reconnect the switch uplink.", "correct": true}, {"id": "wrongfix_5", "text": "Set the office clock.", "correct": false}], "explanation": "The East Wing switch connection is down. Reconnect the switch uplink.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-007", "title": "North Wing is offline", "description": "Several rooms in the North Wing have no network.", "site": "Bengaluru HQ", "service": "Office network", "detected": "SIMULATED", "failedEdge": "core-distA", "telemetry": "The North Wing switch is powered off.", "cause": "easy_6", "diagnoses": [{"id": "easy_6", "text": "The North Wing switch has no power.", "correct": true}, {"id": "wrong_6", "text": "The database password is incorrect.", "correct": false}], "fixes": [{"id": "fix_6", "text": "Restore power to the North Wing switch.", "correct": true}, {"id": "wrongfix_6", "text": "Reset the database password.", "correct": false}], "explanation": "The North Wing switch has no power. Restore power to the North Wing switch.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-008", "title": "Guest Wi-Fi is full", "description": "New visitors cannot join guest Wi-Fi.", "site": "Bengaluru HQ", "service": "Guest Wi-Fi", "detected": "SIMULATED", "failedEdge": "accessB-ap2", "telemetry": "The guest network has used all available IP addresses.", "cause": "easy_7", "diagnoses": [{"id": "easy_7", "text": "The guest network has run out of addresses for new devices.", "correct": true}, {"id": "wrong_7", "text": "The printer cable is loose.", "correct": false}], "fixes": [{"id": "fix_7", "text": "Free unused addresses or expand the guest address pool.", "correct": true}, {"id": "wrongfix_7", "text": "Reconnect the printer cable.", "correct": false}], "explanation": "The guest network has run out of addresses for new devices. Free unused addresses or expand the guest address pool.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-009", "title": "Website name does not work", "description": "People can reach the server by IP address but not by its website name.", "site": "Bengaluru HQ", "service": "Website access", "detected": "SIMULATED", "failedEdge": "firewall-app", "telemetry": "The DNS record points to the wrong address.", "cause": "easy_8", "diagnoses": [{"id": "easy_8", "text": "The website name points to the wrong address.", "correct": true}, {"id": "wrong_8", "text": "The Wi-Fi antenna is broken.", "correct": false}], "fixes": [{"id": "fix_8", "text": "Correct the website DNS record.", "correct": true}, {"id": "wrongfix_8", "text": "Replace the Wi-Fi antenna.", "correct": false}], "explanation": "The website name points to the wrong address. Correct the website DNS record.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-010", "title": "Video calls keep freezing", "description": "Video calls become slow when everyone is online.", "site": "Bengaluru HQ", "service": "Video calls", "detected": "SIMULATED", "failedEdge": "core-distA", "telemetry": "The network connection is overloaded with traffic.", "cause": "easy_9", "diagnoses": [{"id": "easy_9", "text": "Too many devices are using the same connection.", "correct": true}, {"id": "wrong_9", "text": "The printer is out of ink.", "correct": false}], "fixes": [{"id": "fix_9", "text": "Reduce heavy traffic or increase available bandwidth.", "correct": true}, {"id": "wrongfix_9", "text": "Replace printer ink.", "correct": false}], "explanation": "Too many devices are using the same connection. Reduce heavy traffic or increase available bandwidth.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-011", "title": "A network cable is damaged", "description": "One office computer keeps disconnecting.", "site": "Bengaluru HQ", "service": "Office network", "detected": "SIMULATED", "failedEdge": "distB-accessB", "telemetry": "The network cable has a damaged connector.", "cause": "easy_10", "diagnoses": [{"id": "easy_10", "text": "The network cable is faulty.", "correct": true}, {"id": "wrong_10", "text": "The DNS name is too long.", "correct": false}], "fixes": [{"id": "fix_10", "text": "Replace the damaged network cable.", "correct": true}, {"id": "wrongfix_10", "text": "Rename the website.", "correct": false}], "explanation": "The network cable is faulty. Replace the damaged network cable.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-012", "title": "Wi-Fi password is wrong", "description": "Visitors can see the Wi-Fi network but cannot join.", "site": "Bengaluru HQ", "service": "Guest Wi-Fi", "detected": "SIMULATED", "failedEdge": "accessB-ap2", "telemetry": "The saved Wi-Fi password does not match the current password.", "cause": "easy_11", "diagnoses": [{"id": "easy_11", "text": "Visitors are using the wrong Wi-Fi password.", "correct": true}, {"id": "wrong_11", "text": "The printer has no paper.", "correct": false}], "fixes": [{"id": "fix_11", "text": "Enter the correct guest Wi-Fi password.", "correct": true}, {"id": "wrongfix_11", "text": "Add paper to the printer.", "correct": false}], "explanation": "Visitors are using the wrong Wi-Fi password. Enter the correct guest Wi-Fi password.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-013", "title": "Security rule blocks website", "description": "The company website works internally but not for visitors.", "site": "Bengaluru HQ", "service": "Website access", "detected": "SIMULATED", "failedEdge": "core-firewall", "telemetry": "A firewall rule is blocking approved website traffic.", "cause": "easy_12", "diagnoses": [{"id": "easy_12", "text": "A security rule is blocking website access.", "correct": true}, {"id": "wrong_12", "text": "The printer is switched off.", "correct": false}], "fixes": [{"id": "fix_12", "text": "Correct the approved firewall rule for the website.", "correct": true}, {"id": "wrongfix_12", "text": "Switch on the printer.", "correct": false}], "explanation": "A security rule is blocking website access. Correct the approved firewall rule for the website.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-014", "title": "One Wi-Fi point is overloaded", "description": "Wi-Fi is slow in the busy conference room.", "site": "Bengaluru HQ", "service": "Wi-Fi", "detected": "SIMULATED", "failedEdge": "accessB-ap1", "telemetry": "Too many people are connected to the same Wi-Fi access point.", "cause": "easy_13", "diagnoses": [{"id": "easy_13", "text": "Too many users share one Wi-Fi access point.", "correct": true}, {"id": "wrong_13", "text": "The database cable is unplugged.", "correct": false}], "fixes": [{"id": "fix_13", "text": "Move some users to another access point.", "correct": true}, {"id": "wrongfix_13", "text": "Reconnect the database cable.", "correct": false}], "explanation": "Too many users share one Wi-Fi access point. Move some users to another access point.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-015", "title": "Office switch needs power", "description": "Several desks suddenly lose their connection.", "site": "Bengaluru HQ", "service": "Office network", "detected": "SIMULATED", "failedEdge": "distA-accessA", "telemetry": "The access switch has lost power.", "cause": "easy_14", "diagnoses": [{"id": "easy_14", "text": "The access switch is switched off.", "correct": true}, {"id": "wrong_14", "text": "The website certificate has expired.", "correct": false}], "fixes": [{"id": "fix_14", "text": "Restore power to the access switch.", "correct": true}, {"id": "wrongfix_14", "text": "Renew the website certificate.", "correct": false}], "explanation": "The access switch is switched off. Restore power to the access switch.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-016", "title": "Wrong computer address", "description": "One computer cannot reach other networks.", "site": "Bengaluru HQ", "service": "Computer settings", "detected": "SIMULATED", "failedEdge": "accessA-app", "telemetry": "The computer has the wrong default gateway setting.", "cause": "easy_15", "diagnoses": [{"id": "easy_15", "text": "The computer has an incorrect gateway address.", "correct": true}, {"id": "wrong_15", "text": "The printer has a paper jam.", "correct": false}], "fixes": [{"id": "fix_15", "text": "Set the correct gateway address.", "correct": true}, {"id": "wrongfix_15", "text": "Remove the jammed paper.", "correct": false}], "explanation": "The computer has an incorrect gateway address. Set the correct gateway address.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-017", "title": "Wireless access point disconnected", "description": "A meeting room has no Wi-Fi signal.", "site": "Bengaluru HQ", "service": "Wi-Fi", "detected": "SIMULATED", "failedEdge": "accessB-ap2", "telemetry": "The access point cable is unplugged.", "cause": "easy_16", "diagnoses": [{"id": "easy_16", "text": "The access point is disconnected from the switch.", "correct": true}, {"id": "wrong_16", "text": "The server clock is too fast.", "correct": false}], "fixes": [{"id": "fix_16", "text": "Reconnect the access point cable.", "correct": true}, {"id": "wrongfix_16", "text": "Correct the server clock.", "correct": false}], "explanation": "The access point is disconnected from the switch. Reconnect the access point cable.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+        {"id": "EASY-018", "title": "Slow link to the servers", "description": "The application is slow and the connection shows many errors.", "site": "Bengaluru HQ", "service": "Applications", "detected": "SIMULATED", "failedEdge": "distA-accessA", "telemetry": "The server-side network cable is damaged.", "cause": "easy_17", "diagnoses": [{"id": "easy_17", "text": "The server connection has a damaged cable.", "correct": true}, {"id": "wrong_17", "text": "The guest Wi-Fi password is incorrect.", "correct": false}], "fixes": [{"id": "fix_17", "text": "Replace the faulty cable and confirm the errors stop.", "correct": true}, {"id": "wrongfix_17", "text": "Reset the guest Wi-Fi password.", "correct": false}], "explanation": "The server connection has a damaged cable. Replace the faulty cable and confirm the errors stop.", "logs": [["12:00:00", "Network monitor · A connection problem was detected", "WARNING"], ["12:00:02", "ArkayNMS · Some devices or services are affected", "IMPACT"]]},
+      ];
       // Shuffle both the incident order and the answers, independently per playthrough.
       function shuffleArray(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
       function chooseIncidents(){
-        const pool=shuffleArray(scenarios);
+        const pool=shuffleArray(easyScenarios);
         const chosen=[];
         while(pool.length && chosen.length<TOTAL_ROUNDS){
           const last=chosen[chosen.length-1];
@@ -540,7 +562,7 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
         }
         return chosen;
       }
-      const TOTAL_ROUNDS=5,SECONDS=90;
+      const TOTAL_ROUNDS=5,SECONDS=180;
       let roundScenarios=[],playerName='',completed=0,roundNo=0,secondsLeft=SECONDS,timerHandle=null,gameActive=false,roundFinished=false;
       let scenarioIndex = 0;
       let selectedEdge = null;
@@ -620,8 +642,8 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
         const isCorrect = edgeId === current().failedEdge;
         document.querySelectorAll('.edge-group').forEach(g => g.style.opacity = g.dataset.edge === edgeId ? '1' : '.65');
         if (!isCorrect) {
-          showFeedback('That link is currently healthy. Look for the broken red path and inspect that interface.', 'bad');
-          toast('That is not the failed link. Keep tracing the red path.');
+          showFeedback('That link is currently healthy. Try the red dotted line instead.', 'bad');
+          toast('Look for the red dotted line!');
           return;
         }
         $('inspectBox').innerHTML = `<strong>${edge.label}</strong><br>${current().telemetry}`;
@@ -633,7 +655,7 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
         $('step1').classList.add('done'); $('step2').classList.add('active');
         renderChoices('diagnosisChoices', current().diagnoses, 'diagnosis');
         $('resolveHint').textContent = 'DIAGNOSE FIRST';
-        showFeedback('Link inspected. Use the telemetry above to identify the most likely root cause.', 'info');
+        showFeedback('Nice! Now read the clue above and choose what went wrong.', 'info');
         addLog('12:14:02', `Topology inspector · ${edge.iface} selected for analysis`, 'INFO', true);
       }
       function renderChoices(containerId, choices, type) {
@@ -689,17 +711,14 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
         const fixCorrect = scenario.fixes.find(f => f.id === selectedFix)?.correct === true;
         if (!diagnosisCorrect || !fixCorrect) {
           mistakes++;
-          score = Math.max(0, score - 10);
-          $('score').innerHTML = `${String(score).padStart(3,'0')}<small> pts</small>`;
-          const message = !diagnosisCorrect && !fixCorrect
-            ? 'Not quite. The diagnosis and proposed action do not match the telemetry. Re-read the evidence and try again.'
-            : (!diagnosisCorrect ? 'The remediation may sound reasonable, but the root-cause diagnosis does not match the link telemetry.' : 'Good diagnosis, but that action will not correct the underlying fault. Choose a fix that addresses the identified cause.');
-          showFeedback(`${message} (−10 points)`, 'bad'); if(mistakes>=2){failRound('CRITICAL OUTAGE','Two incorrect repairs were attempted. The simulated network remains degraded.');return}
-          addLog('12:14:18', 'NOC console · proposed resolution did not clear the incident', 'WARNING', true);
+          const message = !diagnosisCorrect
+            ? 'Almost! Try the other answer for what went wrong. Read the clue above if needed.'
+            : 'You found the problem! Now try the other repair option.';
+          showFeedback(message+' No points lost — you can try again!', 'info');
           return;
         }
         solved = true; roundFinished = true; completed++; stopTimer();
-        score += Math.max(40, 100 - mistakes * 10);
+        score += 100;
         $('score').innerHTML = `${String(score).padStart(3,'0')}<small> pts</small>`;
         $('submitBtn').disabled = true;
         $('submitBtn').textContent = 'Incident resolved ✓';
@@ -731,7 +750,7 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
         $('siteName').textContent = s.site;
         $('detectedAt').textContent = s.detected;
         $('serviceName').textContent = s.service;
-        $('inspectBox').innerHTML = 'Click the <strong>red, broken link</strong> in the topology to inspect both endpoints and interface telemetry.';
+        $('inspectBox').innerHTML = 'Tap the <strong>red dotted line</strong> on the network picture. Then pick one answer in each step.';
         $('inspectGrid').style.display = 'none';
         $('inspectState').textContent = 'DOWN'; $('inspectState').style.color = 'var(--red)';
         $('diagnoseHint').textContent = 'LOCKED · INSPECT FIRST';
@@ -739,7 +758,7 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
         $('diagnosisChoices').innerHTML = '<button class="choice" disabled><span class="choice-mark">A</span><span class="choice-text">Inspect the failed link to unlock diagnosis options.</span></button>';
         $('resolutionChoices').innerHTML = '<button class="choice" disabled><span class="choice-mark">A</span><span class="choice-text">Choose a likely cause to unlock remediation options.</span></button>';
         $('step1').className = 'step active'; $('step2').className = 'step'; $('step3').className = 'step';
-        $('submitBtn').disabled = true; $('submitBtn').textContent = 'Validate & restore network →';
+        $('submitBtn').disabled = true; $('submitBtn').textContent = 'Fix the network →';
         $('completeOverlay').className='complete-overlay';
         clearFeedback();
         const failed = edges.find(e => e.id === s.failedEdge);
@@ -759,6 +778,13 @@ html[data-theme="light"] .toast{background:#e4f4f7;color:#134651}html[data-theme
         const el = $('toast'); el.textContent = message; el.classList.add('show');
         window.clearTimeout(toast._timer); toast._timer = window.setTimeout(() => el.classList.remove('show'), 2400);
       }
+      $('hintBtn').addEventListener('click',()=>{
+        if(!gameActive || roundFinished)return;
+        if(selectedEdge!==current().failedEdge){showFeedback('Hint: Tap the red dotted connection in the network diagram first.','info');return;}
+        if(!selectedDiagnosis){showFeedback('Hint: '+current().telemetry+' Choose the answer that matches this clue.','info');return;}
+        if(!selectedFix){showFeedback('Hint: Choose the action that directly fixes the problem you identified.','info');return;}
+        showFeedback('Hint: Check that your chosen cause and repair both match the clue.','info');
+      });
       $('submitBtn').addEventListener('click', validateFix);
       $('resetBtn').addEventListener('click', resetGame);
       $('nextBtn').addEventListener('click', () => {
